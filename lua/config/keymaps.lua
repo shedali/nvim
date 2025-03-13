@@ -105,3 +105,11 @@ vim.keymap.set("n", "<leader>gB", ":Telescope git_branches<CR>", { silent = true
 --vim.keymap.set("n", "<leader>gP", ":Neogit push<CR>", { silent = true, noremap = true })
 --ivim.keymap.set("n", "<leader>gp", ":Neogit pull<CR>", { silent = true, noremap = true })
 vim.keymap.set("v", "<leader>gS", ":Gitsigns stage_hunk<CR>", { silent = true, noremap = true })
+vim.api.nvim_set_keymap("n", "<leader>pl", ":Octo pr list<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>pC", ":Octo pr changes<CR>", {
+  noremap = true,
+  silent = true,
+})

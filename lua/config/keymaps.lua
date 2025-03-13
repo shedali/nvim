@@ -32,7 +32,7 @@ vim.api.nvim_set_keymap("n", "<leader>oe", ":ObsidianExtractNote<CR>", { noremap
 
 -- ObsidianSearch
 -- ObsidianQuickSwitch
-vim.api.nvim_set_keymap("n", "<leader>oO", ":ObsidianOpen<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>oO", ":ObsidianQuickSwitch<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>oo", ":ObsidianSearch<CR>", { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap("n", "<leader>fc", "<cmd>Telescope commands<cr>", { noremap = true, silent = true })

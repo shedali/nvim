@@ -13,7 +13,7 @@ vim.g.lazy_localleader = ";"
 
 vim.api.nvim_set_keymap("n", "<leader>gg", ":LazyGit<CR>", { noremap = true, silent = true })
 
--- timestamps
+-- timestamps in insert mode
 vim.keymap.set("i", "<C-d>", "<C-R>=strftime('%Y-%m-%d %H:%M')<CR>", { noremap = true, silent = true })
 
 -- obsidian
@@ -55,7 +55,7 @@ vim.keymap.set("n", "<space>fb", ":Telescope file_browser path=%:p:h select_buff
 
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
-vim.keymap.set("n", "<leader>tt", ":lua require('toggle-checkbox').toggle()<CR>")
+-- vim.keymap.set("n", "<leader>tt", ":lua require('toggle-checkbox').toggle()<CR>")
 
 vim.api.nvim_set_keymap(
   "n",

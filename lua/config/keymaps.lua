@@ -100,11 +100,16 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagn
 
 vim.keymap.set("n", "<leader>gO", require("neogit").open, { silent = true, noremap = true })
 vim.keymap.set("n", "<leader>gB", ":Telescope git_branches<CR>", { silent = true, noremap = true })
---vim.keymap.set("n", "<leader>gb", ":Neogit blame<CR>", { silent = true, noremap = true })
---vim.keymap.set("n", "<leader>gc", ":Neogit commit<CR>", { silent = true, noremap = true })
---vim.keymap.set("n", "<leader>gP", ":Neogit push<CR>", { silent = true, noremap = true })
---ivim.keymap.set("n", "<leader>gp", ":Neogit pull<CR>", { silent = true, noremap = true })
-vim.keymap.set("v", "<leader>gS", ":Gitsigns stage_hunk<CR>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>gb", ":Neogit blame<CR>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>gc", ":Neogit commit<CR>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>gP", ":Neogit push<CR>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>gp", ":Neogit pull<CR>", { silent = true, noremap = true })
+
+vim.keymap.set("v", "<leader>gs", ":Gitsigns stage_hunk<CR>", { silent = true, noremap = true })
+vim.keymap.set("v", "<leader>gu", ":Gitsigns unstage_hunk<CR>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>gv", ":Gitsigns preview_hunk<CR>", { silent = true, noremap = true })
+--
+--- https://github.com/epwalsh/obsidian.nvim?tab=readme-ov-file#commands
 vim.api.nvim_set_keymap("n", "<leader>pl", ":Octo pr list<CR>", {
   noremap = true,
   silent = true,

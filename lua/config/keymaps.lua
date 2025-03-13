@@ -110,7 +110,13 @@ vim.keymap.set("v", "<leader>gu", ":Gitsigns unstage_hunk<CR>", { silent = true,
 vim.keymap.set("n", "<leader>gv", ":Gitsigns preview_hunk<CR>", { silent = true, noremap = true })
 --
 --- https://github.com/epwalsh/obsidian.nvim?tab=readme-ov-file#commands
+--
+--- Octo.nvim
 vim.api.nvim_set_keymap("n", "<leader>pl", ":Octo pr list<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>pr", ":Octo pr ready<CR>", {
   noremap = true,
   silent = true,
 })
@@ -118,3 +124,81 @@ vim.api.nvim_set_keymap("n", "<leader>pC", ":Octo pr changes<CR>", {
   noremap = true,
   silent = true,
 })
+vim.api.nvim_set_keymap("n", "<leader>pc", ":Octo pr commits<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>pu", ":Octo pr url<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>pd", ":Octo pr diff<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>pf", ":Octo pr diff<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>pD", ":Octo pr draft<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>pb", ":Octo pr browser<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>ca", ":Octo comment add<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>cd", ":Octo comment delete<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>tr", ":Octo thread resolve<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>tu", ":Octo thread unresolve<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>rs", ":Octo review start<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>rS", ":Octo review submit<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>rr", ":Octo review resume<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>rc", ":Octo review comments<CR>", {
+  noremap = true,
+  silent = true,
+})
+
+vim.api.nvim_set_keymap("n", "<leader>rV", ":Octo mark-unviewed<CR>", {
+  noremap = true,
+  silent = true,
+})
+vim.api.nvim_set_keymap("n", "<leader>pp", ":Octo actions<CR>", {
+  noremap = true,
+  silent = true,
+})
+
+vim.keymap.set("i", "@", "@<C-x><C-o>", {
+  silent = true,
+  buffer = true,
+})
+vim.keymap.set("i", "#", "#<C-x><C-o>", {
+  silent = true,
+  buffer = true,
+})
+
+vim.keymap.set("n", "<leader>rv", function()
+  require("octo").toggle_viewed()
+end)

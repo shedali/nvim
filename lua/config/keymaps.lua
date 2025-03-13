@@ -1,3 +1,4 @@
+--vim.keymap.set("n", "<leader>gc", ":Neogit commit<CR>", { silent = true, noremap = true })
 -- oerride the lazy.nvim leader key to be ; instead of space
 vim.g.lazy_leader = ";"
 vim.g.lazy_localleader = ";"

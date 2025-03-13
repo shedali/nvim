@@ -98,7 +98,7 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagn
 
 -- GIT
 
---vim.keymap.set("n", "<leader>gs", require("neogit").open, { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>gO", require("neogit").open, { silent = true, noremap = true })
 vim.keymap.set("n", "<leader>gB", ":Telescope git_branches<CR>", { silent = true, noremap = true })
 --vim.keymap.set("n", "<leader>gb", ":Neogit blame<CR>", { silent = true, noremap = true })
 --vim.keymap.set("n", "<leader>gc", ":Neogit commit<CR>", { silent = true, noremap = true })

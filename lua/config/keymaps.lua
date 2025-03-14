@@ -121,7 +121,7 @@ vim.api.nvim_set_keymap("n", "<leader>pr", ":Octo pr ready<CR>", {
   noremap = true,
   silent = true,
 })
-vim.api.nvim_set_keymap("n", "<leader>pC", ":Octo pr changes<CR>", {
+vim.api.nvim_set_keymap("n", "<leader>pC", ":Octo pr checkout<CR>", {
   noremap = true,
   silent = true,
 })

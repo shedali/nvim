@@ -31,6 +31,8 @@ vim.api.nvim_set_keymap("n", "<leader>ofv", ":ObsidianFollowLink vsplit<CR>", { 
 vim.api.nvim_set_keymap("n", "<leader>ofh", ":ObsidianFollowLink hsplit<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>oe", ":ObsidianExtractNote<CR>", { noremap = true, silent = true })
 
+vim.api.nvim_set_keymap("n", "<leader>ow", ":ObsidianWorkspace<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>od", ":ObsidianDailies<CR>", { noremap = true, silent = true })
 -- ObsidianSearch
 -- ObsidianQuickSwitch
 vim.api.nvim_set_keymap("n", "<leader>oO", ":ObsidianQuickSwitch<CR>", { noremap = true, silent = true })

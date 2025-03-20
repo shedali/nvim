@@ -44,6 +44,20 @@ local builtin = require("telescope.builtin") -- https://github.com/nvim-telescop
 vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Telescope find references" })
 vim.keymap.set("n", "<leader>fd", builtin.lsp_document_symbols, { desc = "Telescope find document symbols" })
 vim.keymap.set("n", "<leader>fs", function()
+  builtin.treesitter()
+end, { desc = "Find symbols with Treesitter" })
+
+vim.keymap.set("n", "gd", function()
+  builtin.lsp_definitions()
+end, { desc = "Go to definition" })
+
+vim.keymap.set("n", "gi", function()
+  builtin.lsp_implementations()
+end, { desc = "Go to implementation" })
+
+vim.keymap.set("n", "gy", function()
+  builtin.lsp_type_definitions()
+end, { desc = "Go to type definition" })
 --
 -- Telescope
 vim.keymap.set("n", "<leader>fg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")

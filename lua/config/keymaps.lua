@@ -83,6 +83,12 @@ vim.api.nvim_set_keymap(
   "<cmd>lua require('neotest').run.run({ vitestCommand = 'pnpm vitest --watch' })<cr>",
   { desc = "Run Watch" }
 )
+vim.api.nvim_set_keymap(
+  "n",
+  "<leader>twf",
+  "<cmd>lua require('neotest').run.run({ vim.fn.expand('%'), vitestCommand = 'vitest --watch' })<cr>",
+  { desc = "Run Watch File" }
+)
 
 vim.api.nvim_set_keymap(
   "n",
@@ -116,6 +122,18 @@ vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
 vim.keymap.set("n", "<leader>E", vim.diagnostic.open_float, { desc = "Show diagnostic [E]rror messages" })
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+
+vim.keymap.set("n", "<leader>dn", function()
+  require("trouble").next({ skip_groups = true, jump = true })
+end, { desc = "Jump to next issue in Trouble" })
+
+vim.keymap.set("n", "<leader>dp", function()
+  require("trouble").previous({ skip_groups = true, jump = true })
+end, { desc = "Jump to previous issue in Trouble" })
+
+vim.keymap.set("n", "<leader>dw", function()
+  require("trouble").next({ skip_groups = false, jump = true })
+end, { desc = "Jump to next workspace issue" })
 
 -- GIT
 

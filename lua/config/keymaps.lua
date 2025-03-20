@@ -39,11 +39,11 @@ vim.api.nvim_set_keymap("n", "<leader>oO", ":ObsidianQuickSwitch<CR>", { noremap
 vim.api.nvim_set_keymap("n", "<leader>oo", ":ObsidianSearch<CR>", { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap("n", "<leader>fc", "<cmd>Telescope commands<cr>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<leader>fcd", "<cmd>:Telescope zoxide<cr>", { noremap = true, silent = true })
 
 local builtin = require("telescope.builtin") -- https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#vim-pickers
 vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Telescope find references" })
 vim.keymap.set("n", "<leader>fd", builtin.lsp_document_symbols, { desc = "Telescope find document symbols" })
+vim.keymap.set("n", "<leader>fs", function()
 --
 -- Telescope
 vim.keymap.set("n", "<leader>fg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")

@@ -42,6 +42,15 @@ vim.api.nvim_set_keymap("n", "<leader>fc", "<cmd>Telescope commands<cr>", { nore
 local builtin = require("telescope.builtin") -- https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#vim-pickers
 vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Telescope find references" })
 vim.keymap.set("n", "<leader>fd", builtin.lsp_document_symbols, { desc = "Telescope find document symbols" })
+
+vim.keymap.set("n", "<leader><leader>", function()
+  builtin.find_files({
+    hidden = true,
+    no_ignore = false, -- keep ignoring files in .gitignore
+    file_ignore_patterns = { "%.git/" }, -- explicitly ignore .git folder
+  })
+end)
+
 vim.keymap.set("n", "<leader>fs", function()
   builtin.treesitter()
 end, { desc = "Find symbols with Treesitter" })

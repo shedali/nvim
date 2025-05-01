@@ -33,7 +33,8 @@ vim.api.nvim_set_keymap("n", "<leader>ow", ":ObsidianWorkspace<CR>", { noremap =
 vim.api.nvim_set_keymap("n", "<leader>od", ":ObsidianDailies<CR>", { noremap = true, silent = true })
 -- ObsidianSearch
 -- ObsidianQuickSwitch
-vim.api.nvim_set_keymap("n", "<leader>oO", ":ObsidianQuickSwitch<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>o<leader>", ":ObsidianQuickSwitch<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>oO", ":ObsidianOpen<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>oo", ":ObsidianSearch<CR>", { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap("n", "<leader>fc", "<cmd>Telescope commands<cr>", { noremap = true, silent = true })
@@ -41,6 +42,7 @@ vim.api.nvim_set_keymap("n", "<leader>fc", "<cmd>Telescope commands<cr>", { nore
 local builtin = require("telescope.builtin") -- https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#vim-pickers
 vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Telescope find references" })
 vim.keymap.set("n", "<leader>fd", builtin.lsp_document_symbols, { desc = "Telescope find document symbols" })
+vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find Buffers" })
 
 vim.keymap.set("n", "<leader><leader>", function()
   builtin.find_files({

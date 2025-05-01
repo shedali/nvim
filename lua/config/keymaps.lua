@@ -88,19 +88,19 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.api.nvim_set_keymap(
   "n",
   "<leader>twr",
-  "<cmd>lua require('neotest').run.run({ vitestCommand = 'pnpm vitest --watch' })<cr>",
-  { desc = "Run Watch" }
+  "<cmd>lua require('neotest').run.run({ args = { 'pnpm', 'vitest', '--watch'},cwd = vim.fn.getcwd()})<cr>",
+  { desc = "Run Watch All" }
 )
 vim.api.nvim_set_keymap(
   "n",
   "<leader>twf",
-  "<cmd>lua require('neotest').run.run({ vim.fn.expand('%'), vitestCommand = 'vitest --watch' })<cr>",
+  "<cmd>lua require('neotest').run.run({ args = { 'pnpm', 'vitest', '--watch', vim.fn.expand('%') },cwd = vim.fn.getcwd()})<cr>",
   { desc = "Run Watch File" }
 )
 
 vim.api.nvim_set_keymap(
   "n",
-  "<leader>tr",
+  "<leader>trt",
   "<cmd>lua require('neotest').run.run({ vitestCommand = 'pnpm vitest run' })<cr>",
   { desc = "Run test" }
 )
@@ -110,13 +110,6 @@ vim.api.nvim_set_keymap(
   "<leader>ts",
   "<cmd>lua require('neotest').summary.toggle()<CR>",
   { noremap = true, silent = true, desc = "Toggle Neotest Summary" }
-)
-
-vim.api.nvim_set_keymap(
-  "n",
-  "<leader>to",
-  "<cmd>lua require('neotest').output_panel.toggle()<CR>",
-  { noremap = true, silent = true, desc = "Toggle Neotest Output" }
 )
 
 vim.api.nvim_set_keymap(

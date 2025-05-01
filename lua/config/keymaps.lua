@@ -11,7 +11,6 @@ vim.g.lazy_localleader = ";"
 
 --vim.api.nvim_set_keymap('n', '<leader>r', ':Neotree filesystem reveal left<CR><CR>', { noremap = true, silent = true })
 
-vim.api.nvim_set_keymap("n", "<leader>gg", ":LazyGit<CR>", { noremap = true, silent = true })
 
 -- timestamps in insert mode
 vim.keymap.set("i", "<C-d>", "<C-R>=strftime('%Y-%m-%d %H:%M')<CR>", { noremap = true, silent = true })

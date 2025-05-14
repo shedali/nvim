@@ -72,6 +72,31 @@ end, { desc = "Go to type definition" })
 -- Telescope
 vim.keymap.set("n", "<leader>fg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
 
+-- Enhanced todo navigation
+vim.api.nvim_create_user_command("NextTodo", function()
+  -- Save current position
+  local save_cursor = vim.fn.getcurpos()
+  -- Try to find TODO: first in the current buffer
+  vim.cmd[[/\(TODO:\|test\.todo\|it\.todo\)]]
+  -- If not found, go back to original position
+  if vim.fn.getcurpos()[2] == save_cursor[2] and vim.fn.getcurpos()[3] == save_cursor[3] then
+    vim.fn.setpos('.', save_cursor)
+    vim.notify("No more TODOs found", vim.log.levels.INFO)
+  end
+end, {})
+
+vim.api.nvim_create_user_command("PrevTodo", function()
+  -- Save current position
+  local save_cursor = vim.fn.getcurpos()
+  -- Try to find TODO: backward in the current buffer
+  vim.cmd[[?\(TODO:\|test\.todo\|it\.todo\)]]
+  -- If not found, go back to original position
+  if vim.fn.getcurpos()[2] == save_cursor[2] and vim.fn.getcurpos()[3] == save_cursor[3] then
+    vim.fn.setpos('.', save_cursor)
+    vim.notify("No previous TODOs found", vim.log.levels.INFO)
+  end
+end, {})
+
 --
 vim.keymap.set("n", "<space>fz", ":Telescope zoxide<CR>")
 

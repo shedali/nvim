@@ -43,6 +43,7 @@ local builtin = require("telescope.builtin") -- https://github.com/nvim-telescop
 vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Telescope find references" })
 vim.keymap.set("n", "<leader>fd", builtin.lsp_document_symbols, { desc = "Telescope find document symbols" })
 vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find Buffers" })
+vim.keymap.set("n", "<leader>fo", builtin.oldfiles, { desc = "Find Recent Files" })
 
 vim.keymap.set("n", "<leader><leader>", function()
   builtin.find_files({
@@ -70,6 +71,7 @@ end, { desc = "Go to type definition" })
 --
 -- Telescope
 vim.keymap.set("n", "<leader>fg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
+
 --
 vim.keymap.set("n", "<space>fz", ":Telescope zoxide<CR>")
 

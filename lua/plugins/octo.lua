@@ -41,7 +41,7 @@ return {
     users = "search", -- Users for assignees or reviewers. Values: "search" | "mentionable" | "assignable"
     user_icon = " ", -- user icon
     timeline_marker = " ", -- timeline marker
-    timeline_indent = "2", -- timeline indentation
+    timeline_indent = 2, -- timeline indentation
     right_bubble_delimiter = "", -- bubble delimiter
     left_bubble_delimiter = "", -- bubble delimiter
     github_hostname = "", -- GitHub Enterprise host

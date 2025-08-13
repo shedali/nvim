@@ -176,7 +176,7 @@ vim.api.nvim_set_keymap("n", "<leader>pd", ":Octo pr diff<CR>", {
   noremap = true,
   silent = true,
 })
-vim.api.nvim_set_keymap("n", "<leader>pf", ":Octo pr diff<CR>", {
+vim.api.nvim_set_keymap("n", "<leader>pf", ":Octo pr changes<CR>", {
   noremap = true,
   silent = true,
 })

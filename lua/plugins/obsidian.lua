@@ -4,45 +4,32 @@
 -- See the kickstart.nvim README for more information
 return {
   "epwalsh/obsidian.nvim",
-  picker = {
-    -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', or 'mini.pick'.
-    name = "telescope.nvim",
-    -- Optional, configure key mappings for the picker. These are the defaults.
-    -- Not all pickers support all mappings.
-    note_mappings = {
-      -- Create a new note from your query.
-      new = "<C-x>",
-      -- Insert a link to the selected note.
-      insert_link = "<C-l>",
-    },
-    tag_mappings = {
-      -- Add tag(s) to current note.
-      tag_note = "<C-x>",
-      -- Insert a tag at the current location.
-      insert_tag = "<C-l>",
-    },
-  },
   version = "*", -- recommended, use latest release instead of latest commit
   lazy = false,
   ft = "markdown",
-  vim = {
-    opt = {
-      conceallevel = 1,
-    },
-  },
-  --   ft = 'markdown',
-  -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
-  -- event = {
-  --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-  --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
-  --   "BufReadPre path/to/my-vault/**.md",
-  --   "BufNewFile path/to/my-vault/**.md",
-  -- },
   dependencies = {
     "nvim-lua/plenary.nvim",
     "hrsh7th/nvim-cmp",
   },
   opts = {
+    picker = {
+      -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', or 'mini.pick'.
+      name = "telescope.nvim",
+      -- Optional, configure key mappings for the picker. These are the defaults.
+      -- Not all pickers support all mappings.
+      note_mappings = {
+        -- Create a new note from your query.
+        new = "<C-x>",
+        -- Insert a link to the selected note.
+        insert_link = "<C-l>",
+      },
+      tag_mappings = {
+        -- Add tag(s) to current note.
+        tag_note = "<C-x>",
+        -- Insert a tag at the current location.
+        insert_tag = "<C-l>",
+      },
+    },
     attachments = {
       -- The default folder to place images in via `:ObsidianPasteImg`.
       -- If this is a relative path it will be interpreted as relative to the vault root.
@@ -68,10 +55,10 @@ return {
         name = "web-console",
         path = "~/vaults/web-console",
       },
-      {
-        name = "posts",
-        path = "~/dev/shedali/writing/blog/apps/blog/src/posts",
-      },
+      -- {
+      --   name = "posts",
+      --   path = "~/dev/shedali/writing/blog/apps/blog/src/posts",
+      -- },
     },
     follow_url_func = function(url)
       -- Open the URL in the default web browser.

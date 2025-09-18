@@ -1,0 +1,13 @@
+return {
+  "sphamba/smear-cursor.nvim",
+  event = "VeryLazy",
+  opts = {
+    stiffness = 0.8,
+    trailing_stiffness = 0.5,
+    distance_stop_animating = 0.5,
+    hide_target_hack = false,
+  },
+  config = function(_, opts)
+    require("smear_cursor").setup(opts)
+  end,
+}

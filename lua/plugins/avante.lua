@@ -16,7 +16,7 @@ return {
     --- The below dependencies are optional,
     "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
     "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-    "zbirenbaum/copilot.lua", -- for providers='copilot'
+    -- Removed copilot.lua to eliminate Node.js dependency
     {
       -- support for image pasting
       "HakonHarnes/img-clip.nvim",

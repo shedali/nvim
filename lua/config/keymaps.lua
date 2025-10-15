@@ -509,3 +509,46 @@ end, {range = true})
 -- Add keybinding for toggling checkbox/bullet - normal and visual mode
 vim.keymap.set("n", "<leader>cb", ":ToggleCheckbox<CR>", { desc = "Toggle checkbox/bullet", silent = true, noremap = true })
 vim.keymap.set("v", "<leader>cb", ":ToggleCheckbox<CR>", { desc = "Toggle checkbox/bullet (visual)", silent = true, noremap = true })
+
+-- Go-specific keybindings
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go",
+  callback = function()
+    -- Go.nvim commands
+    vim.keymap.set("n", ";gf", ":GoFillStruct<CR>", { buffer = true, desc = "Fill struct with default values", silent = true })
+    vim.keymap.set("n", ";gi", ":GoIfErr<CR>", { buffer = true, desc = "Add if err != nil", silent = true })
+    vim.keymap.set("n", ";gI", ":GoImpl<CR>", { buffer = true, desc = "Generate interface implementation", silent = true })
+    vim.keymap.set("n", ";gt", ":GoAddTag<CR>", { buffer = true, desc = "Add struct tags", silent = true })
+    vim.keymap.set("n", ";gT", ":GoRmTag<CR>", { buffer = true, desc = "Remove struct tags", silent = true })
+    vim.keymap.set("n", ";gc", ":GoCmt<CR>", { buffer = true, desc = "Add comment", silent = true })
+    vim.keymap.set("n", ";ge", ":GoGenerate<CR>", { buffer = true, desc = "Run go generate", silent = true })
+    vim.keymap.set("n", ";ga", ":GoAlt<CR>", { buffer = true, desc = "Switch between code and test", silent = true })
+    vim.keymap.set("n", ";gA", ":GoAltV<CR>", { buffer = true, desc = "Switch between code and test (vsplit)", silent = true })
+
+    -- Gopher.nvim commands
+    vim.keymap.set("n", ";gsj", ":GoTagAdd json<CR>", { buffer = true, desc = "Add json struct tags", silent = true })
+    vim.keymap.set("n", ";gsy", ":GoTagAdd yaml<CR>", { buffer = true, desc = "Add yaml struct tags", silent = true })
+    vim.keymap.set("n", ";gsi", ":GoIfErr<CR>", { buffer = true, desc = "Generate if err", silent = true })
+
+    -- Testing
+    vim.keymap.set("n", ";gtr", ":GoTest<CR>", { buffer = true, desc = "Run Go tests", silent = true })
+    vim.keymap.set("n", ";gtf", ":GoTestFunc<CR>", { buffer = true, desc = "Run test for current function", silent = true })
+    vim.keymap.set("n", ";gtp", ":GoTestPkg<CR>", { buffer = true, desc = "Run tests for package", silent = true })
+    vim.keymap.set("n", ";gta", ":lua require('neotest').run.run()<CR>", { buffer = true, desc = "Run nearest test", silent = true })
+    vim.keymap.set("n", ";gtA", ":lua require('neotest').run.run(vim.fn.expand('%'))<CR>", { buffer = true, desc = "Run all tests in file", silent = true })
+    vim.keymap.set("n", ";gts", ":lua require('neotest').summary.toggle()<CR>", { buffer = true, desc = "Toggle test summary", silent = true })
+    vim.keymap.set("n", ";gto", ":lua require('neotest').output.open({ enter = true })<CR>", { buffer = true, desc = "Show test output", silent = true })
+
+    -- Debugging
+    vim.keymap.set("n", ";gdb", ":lua require('dap-go').debug_test()<CR>", { buffer = true, desc = "Debug test", silent = true })
+    vim.keymap.set("n", ";gdl", ":lua require('dap-go').debug_last()<CR>", { buffer = true, desc = "Debug last test", silent = true })
+
+    -- Build and run
+    vim.keymap.set("n", ";gb", ":GoBuild<CR>", { buffer = true, desc = "Build Go project", silent = true })
+    vim.keymap.set("n", ";gr", ":GoRun<CR>", { buffer = true, desc = "Run Go project", silent = true })
+
+    -- Code coverage
+    vim.keymap.set("n", ";gcv", ":GoCoverage<CR>", { buffer = true, desc = "Show code coverage", silent = true })
+    vim.keymap.set("n", ";gcV", ":GoCoverageClear<CR>", { buffer = true, desc = "Clear code coverage", silent = true })
+  end,
+})

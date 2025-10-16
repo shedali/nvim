@@ -9,3 +9,5 @@ foo.*
 data
 .DS_Store
 .direnv
+
+**/.claude/settings.local.json

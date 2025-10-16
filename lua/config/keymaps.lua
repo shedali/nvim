@@ -18,7 +18,9 @@ vim.keymap.set("i", "<C-d>", "<C-R>=strftime('%Y-%m-%d %H:%M')<CR>", { noremap =
 vim.api.nvim_set_keymap("n", "<leader>o<", ":ObsidianYesterday<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>ot", ":ObsidianToday<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>o#", ":ObsidianTags<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<leader>ol", ":ObsidianLink<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>ol", ":ObsidianLink<CR>", { noremap = true, silent = true, desc = "Create wiki link" })
+vim.api.nvim_set_keymap("v", "<leader>ol", ":ObsidianLink<CR>", { noremap = true, silent = true, desc = "Surround with wiki link" })
+vim.api.nvim_set_keymap("v", "<leader>wl", ":ObsidianLink<CR>", { noremap = true, silent = true, desc = "Wiki link selection" })
 vim.api.nvim_set_keymap("n", "<leader>ob", ":ObsidianBacklinks<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>or", ":ObsidianRename<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>o>", ":ObsidianTomorrow<CR>", { noremap = true, silent = true })
@@ -27,6 +29,7 @@ vim.api.nvim_set_keymap("n", "<leader>on", ":ObsidianNew<CR>", { noremap = true,
 vim.api.nvim_set_keymap("n", "<leader>ofv", ":ObsidianFollowLink vsplit<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>ofh", ":ObsidianFollowLink hsplit<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>oe", ":ObsidianExtractNote<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("v", "<leader>oc", ":ObsidianLinkNew<CR>", { noremap = true, silent = true, desc = "Create new note from selection" })
 
 vim.api.nvim_set_keymap("n", "<leader>ow", ":ObsidianWorkspace<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>od", ":ObsidianDailies<CR>", { noremap = true, silent = true })
@@ -100,89 +103,253 @@ vim.api.nvim_create_user_command("PrevTodo", function()
   end
 end, {})
 
+-- Checkbox navigation commands
+-- Create a Lua function that does the searching (more robust than Vim commands)
+local function find_checkbox(open, forward)
+  -- Save current cursor position
+  local cursor_line = vim.fn.line('.')
+  local cursor_col = vim.fn.col('.')
+  
+  -- Get all lines in the current buffer
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  
+  -- Define the pattern to search for
+  local pattern
+  if open then
+    pattern = "- %[ %]"  -- Open checkbox pattern
+  else
+    pattern = "- %[[xX]%]"  -- Closed checkbox pattern
+  end
+  
+  -- Variables to track the best match
+  local target_line = nil
+  local target_col = nil
+  local distance = math.huge
+  
+  -- Search through all lines
+  for i, line in ipairs(lines) do
+    local start_idx = 1
+    
+    -- Find all matches in this line
+    while true do
+      local match_start, match_end = line:find(pattern, start_idx)
+      if not match_start then break end
+      
+      -- Calculate position relative to current cursor
+      local match_line = i
+      local match_col = match_start
+      
+      if forward then
+        -- Looking forward: match must be after cursor
+        if match_line > cursor_line or (match_line == cursor_line and match_col > cursor_col) then
+          local curr_distance = (match_line - cursor_line) * 1000 + (match_col - cursor_col)
+          if curr_distance < distance then
+            distance = curr_distance
+            target_line = match_line
+            target_col = match_col
+          end
+        end
+      else
+        -- Looking backward: match must be before cursor
+        if match_line < cursor_line or (match_line == cursor_line and match_col < cursor_col) then
+          local curr_distance = (cursor_line - match_line) * 1000 + (cursor_col - match_col)
+          if curr_distance < distance then
+            distance = curr_distance
+            target_line = match_line
+            target_col = match_col
+          end
+        end
+      end
+      
+      -- Move to next potential match in this line
+      start_idx = match_end + 1
+    end
+  end
+  
+  -- If we found a match, go to it
+  if target_line then
+    vim.api.nvim_win_set_cursor(0, {target_line, target_col - 1})
+    return true
+  else
+    local status = open and "open" or "completed"
+    local direction = forward and "next" or "previous"
+    vim.notify("No " .. direction .. " " .. status .. " checkbox found", vim.log.levels.INFO)
+    return false
+  end
+end
+
+-- Commands for checkbox navigation
+vim.api.nvim_create_user_command("NextOpenCheckbox", function()
+  find_checkbox(true, true)
+end, {})
+
+vim.api.nvim_create_user_command("PrevOpenCheckbox", function()
+  find_checkbox(true, false)
+end, {})
+
+vim.api.nvim_create_user_command("NextClosedCheckbox", function()
+  find_checkbox(false, true)
+end, {})
+
+vim.api.nvim_create_user_command("PrevClosedCheckbox", function()
+  find_checkbox(false, false)
+end, {})
+
+-- Add a function to insert a TODO comment at the current cursor position
+vim.api.nvim_create_user_command("InsertTodo", function()
+  -- Get the current indentation level
+  local line = vim.api.nvim_get_current_line()
+  local indent = line:match("^%s*")
+  
+  -- Get the filetype to determine comment style
+  local filetype = vim.bo.filetype
+  local todo_text = ""
+  
+  -- Determine the appropriate comment style based on filetype
+  if filetype == "lua" then
+    todo_text = indent .. "-- TODO: "
+  elseif filetype == "vim" or filetype == "vimscript" then
+    todo_text = indent .. "\" TODO: "
+  elseif filetype == "markdown" or filetype == "text" then
+    todo_text = indent .. "TODO: "
+  elseif filetype == "python" then
+    todo_text = indent .. "# TODO: "
+  elseif filetype == "javascript" or filetype == "typescript" or 
+         filetype == "javascriptreact" or filetype == "typescriptreact" or
+         filetype == "java" or filetype == "c" or filetype == "cpp" or
+         filetype == "rust" or filetype == "go" or filetype == "php" or
+         filetype == "swift" or filetype == "kotlin" or filetype == "scala" then
+    todo_text = indent .. "// TODO: "
+  elseif filetype == "html" or filetype == "xml" then
+    todo_text = indent .. "<!-- TODO: -->"
+  elseif filetype == "css" or filetype == "scss" or filetype == "less" then
+    todo_text = indent .. "/* TODO: */"
+  else
+    -- Default to a generic comment format
+    todo_text = indent .. "# TODO: "
+  end
+  
+  -- Insert the TODO comment and enter insert mode
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  
+  -- Create a new line after the current one
+  if vim.fn.col("$") == 1 then
+    -- If line is empty, just set the content
+    vim.api.nvim_set_current_line(todo_text)
+    local new_pos = {row, #todo_text}
+    vim.api.nvim_win_set_cursor(0, new_pos)
+  else
+    -- Insert a new line after current line
+    vim.api.nvim_buf_set_lines(0, row, row, false, {todo_text})
+    vim.api.nvim_win_set_cursor(0, {row + 1, #todo_text})
+  end
+  
+  -- Enter insert mode at the end of the TODO comment
+  vim.cmd("startinsert!")
+end, {})
+
+-- Function to create a new TODO note in Obsidian
+vim.api.nvim_create_user_command("CreateTodoNote", function()
+  -- Create a timestamp for unique note naming
+  local timestamp = os.date("%Y%m%d%H%M%S")
+  local default_title = "TODO-" .. timestamp
+  
+  -- Prompt the user for a title
+  vim.ui.input({ prompt = "TODO Title: ", default = default_title }, function(title)
+    if not title or title == "" then return end
+    
+    -- Check if Obsidian client is available
+    local ok, obsidian = pcall(require, "obsidian")
+    if not ok then
+      vim.notify("Obsidian plugin not found", vim.log.levels.ERROR)
+      return
+    end
+    
+    local client = obsidian.get_client()
+    if not client then
+      vim.notify("Obsidian client not initialized", vim.log.levels.ERROR)
+      return
+    end
+    
+    -- Prepare the template for new TODO note
+    local template = [[---
+aliases: []] .. title .. [[], todo]] .. timestamp .. [[]
+tags: [todo]
+---
+
+# ]] .. title .. [[
+
+## Description
+
+<!-- What needs to be done? -->
+
+## Tasks
+
+- [ ] 
+
+## Notes
+
+<!-- Additional context, ideas, references -->
+
+]]
+    
+    -- Create the new note
+    -- First try to use the built-in command if available
+    vim.cmd("ObsidianNew " .. title)
+    
+    -- Replace content with our template (delay slightly to ensure the buffer is created)
+    vim.defer_fn(function()
+      local buf = vim.api.nvim_get_current_buf()
+      local lines = vim.split(template, "\n")
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+      
+      -- Position cursor at the task list to start adding tasks
+      local task_line = 0
+      for i, line in ipairs(lines) do
+        if line:match("^- %[ %]") then
+          task_line = i - 1
+          break
+        end
+      end
+      
+      if task_line > 0 then
+        vim.api.nvim_win_set_cursor(0, {task_line + 1, 6})
+        vim.cmd("startinsert")
+      end
+      
+      vim.notify("Created new TODO note: " .. title, vim.log.levels.INFO)
+    end, 100)
+  end)
+end, {})
+
 -- Aerial keybindings
 vim.keymap.set("n", "<leader>ao", "<cmd>AerialToggle!<CR>", { desc = "Toggle Aerial Outline" })
 vim.keymap.set("n", "<leader>an", "<cmd>AerialNavToggle<CR>", { desc = "Toggle Aerial Navigator" })
 vim.keymap.set("n", "[s", "<cmd>AerialPrev<CR>", { desc = "Previous Symbol" })
 vim.keymap.set("n", "]s", "<cmd>AerialNext<CR>", { desc = "Next Symbol" })
 
--- Keybindings for todo navigation
+-- Keybindings for todo navigation and insertion
 vim.keymap.set("n", "]T", ":NextTodo<CR>", { desc = "Next TODO or todo test", silent = true })
 vim.keymap.set("n", "[T", ":PrevTodo<CR>", { desc = "Previous TODO or todo test", silent = true })
+vim.keymap.set("n", "<leader>tt", ":InsertTodo<CR>", { desc = "Insert TODO comment", silent = true })
+vim.keymap.set("n", "<leader>tn", ":CreateTodoNote<CR>", { desc = "Create TODO note in Obsidian", silent = true })
 
--- List all TODOs in project with two separate commands
+-- Keybindings for checkbox navigation - using ']b' and '[b' to avoid conflicts
+vim.keymap.set("n", "]b", ":NextOpenCheckbox<CR>", { desc = "Next open checkbox", silent = true })
+vim.keymap.set("n", "[b", ":PrevOpenCheckbox<CR>", { desc = "Previous open checkbox", silent = true })
+vim.keymap.set("n", "]X", ":NextClosedCheckbox<CR>", { desc = "Next completed checkbox", silent = true })
+vim.keymap.set("n", "[X", ":PrevClosedCheckbox<CR>", { desc = "Previous completed checkbox", silent = true })
+
+-- Additional checkbox mappings (]c/[c for compatibility, ]x/[x reserved for Trouble diagnostics)
+vim.keymap.set("n", "]c", ":NextOpenCheckbox<CR>", { desc = "Next open checkbox", silent = true })
+vim.keymap.set("n", "[c", ":PrevOpenCheckbox<CR>", { desc = "Previous open checkbox", silent = true })
+
+-- List all TODOs in project - uses live_grep_args extension
 vim.api.nvim_create_user_command("ListAllTodos", function()
-  -- Create a buffer to collect todos
-  local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
-  
-  -- Function to add results to our buffer
-  local function append_data(_, data)
-    if data then
-      vim.api.nvim_buf_set_lines(buf, -1, -1, false, data)
-    end
-  end
-  
-  -- Function to handle process completion
-  local function on_exit(_, _, _)
-    -- Get buffer content
-    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-    
-    -- If we have results, show them in telescope
-    if #lines > 0 then
-      vim.defer_fn(function()
-        require("telescope.pickers").new({}, {
-          prompt_title = "All TODOs",
-          finder = require("telescope.finders").new_table({
-            results = lines,
-            entry_maker = function(entry)
-              -- Parse the ripgrep output format
-              local _, filename, lnum, text = string.match(entry, "([^:]+):([^:]+):([^:]+):(.*)")
-              if not filename then
-                return nil
-              end
-              return {
-                value = entry,
-                ordinal = entry,
-                display = entry,
-                filename = filename,
-                lnum = tonumber(lnum),
-                text = text
-              }
-            end,
-          }),
-          sorter = require("telescope.config").values.generic_sorter({}),
-          previewer = require("telescope.config").values.grep_previewer({}),
-          attach_mappings = function(prompt_bufnr, map)
-            local actions = require("telescope.actions")
-            actions.select_default:replace(function()
-              actions.close(prompt_bufnr)
-              local selection = require("telescope.actions.state").get_selected_entry()
-              if selection then
-                vim.cmd("edit " .. selection.filename)
-                vim.api.nvim_win_set_cursor(0, {selection.lnum, 0})
-                vim.cmd("normal! zz")
-              end
-            end)
-            return true
-          end,
-        }):find()
-      end, 100)
-    else
-      vim.notify("No TODOs found", vim.log.levels.INFO)
-    end
-  end
-  
-  -- First search for TODO:
-  vim.fn.jobstart("rg --no-heading --line-number 'TODO:' --glob '**/*.{js,jsx,ts,tsx,lua,md}'", {
-    on_stdout = append_data,
-    on_exit = function()
-      -- Then search for test.todo and it.todo
-      vim.fn.jobstart("rg --no-heading --line-number '(test|it)\\.todo\\(' --glob '**/*.{js,jsx,ts,tsx}'", {
-        on_stdout = append_data,
-        on_exit = on_exit
-      })
-    end
+  -- Use the live_grep_args extension that's already configured
+  require('telescope').extensions.live_grep_args.live_grep_args({
+    prompt_title = "All TODOs in Project",
+    default_text = "TODO:|test\\.todo\\(|it\\.todo\\(",
   })
 end, {})
 
@@ -280,9 +447,15 @@ end)
 
 -- Neogit keymappings are defined in neogit.lua
 
-vim.keymap.set("v", "<leader>gs", ":Gitsigns stage_hunk<CR>", { silent = true, noremap = true })
-vim.keymap.set("v", "<leader>gu", ":Gitsigns unstage_hunk<CR>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>gv", ":Gitsigns preview_hunk<CR>", { silent = true, noremap = true })
+vim.keymap.set("v", "<leader>gs", ":Gitsigns stage_hunk<CR>", { silent = true, noremap = true, desc = "Stage selected hunk" })
+vim.keymap.set("v", "<leader>gu", ":Gitsigns unstage_hunk<CR>", { silent = true, noremap = true, desc = "Unstage selected hunk" })
+vim.keymap.set("v", "<leader>gr", ":Gitsigns reset_hunk<CR>", { silent = true, noremap = true, desc = "Reset selected hunk" })
+vim.keymap.set("n", "<leader>gv", ":Gitsigns preview_hunk<CR>", { silent = true, noremap = true, desc = "Preview hunk" })
+vim.keymap.set("n", "<leader>gr", ":Gitsigns reset_hunk<CR>", { silent = true, noremap = true, desc = "Reset hunk" })
+vim.keymap.set("n", "<leader>gV", ":Gitsigns select_hunk<CR>", { silent = true, noremap = true, desc = "Select hunk" })
+vim.keymap.set("n", "ih", ":<C-U>Gitsigns select_hunk<CR>", { silent = true, noremap = true, desc = "Select inner hunk" })
+vim.keymap.set("o", "ih", ":<C-U>Gitsigns select_hunk<CR>", { silent = true, noremap = true, desc = "Select inner hunk" })
+vim.keymap.set("x", "ih", ":<C-U>Gitsigns select_hunk<CR>", { silent = true, noremap = true, desc = "Select inner hunk" })
 --
 --- https://github.com/epwalsh/obsidian.nvim?tab=readme-ov-file#commands
 --
@@ -327,18 +500,22 @@ vim.api.nvim_set_keymap("n", "<leader>pb", ":Octo pr browser<CR>", {
 vim.api.nvim_set_keymap("n", "<leader>ca", ":Octo comment add<CR>", {
   noremap = true,
   silent = true,
+  desc = "Add comment to PR"
 })
 vim.api.nvim_set_keymap("n", "<leader>cd", ":Octo comment delete<CR>", {
   noremap = true,
   silent = true,
+  desc = "Delete comment"
 })
-vim.api.nvim_set_keymap("n", "<leader>tr", ":Octo thread resolve<CR>", {
+vim.api.nvim_set_keymap("n", "<leader>ptr", ":Octo thread resolve<CR>", {
   noremap = true,
   silent = true,
+  desc = "Resolve PR thread"
 })
-vim.api.nvim_set_keymap("n", "<leader>tu", ":Octo thread unresolve<CR>", {
+vim.api.nvim_set_keymap("n", "<leader>ptu", ":Octo thread unresolve<CR>", {
   noremap = true,
   silent = true,
+  desc = "Unresolve PR thread"
 })
 vim.api.nvim_set_keymap("n", "<leader>rs", ":Octo review start<CR>", {
   noremap = true,
@@ -432,12 +609,12 @@ vim.keymap.set("n", "<leader>om", move_obsidian_note, { desc = "Move Obsidian no
 
 -- PERSISTENCE
 -- load the session for the current directory
-vim.keymap.set("n", "<leader>ql", function()
+vim.keymap.set("n", "<leader>qs", function()
   require("persistence").load()
 end, { desc = "Load session for current directory" })
 
 -- select a session to load
-vim.keymap.set("n", "<leader>qS", function()
+vim.keymap.set("n", "<leader>ql", function()
   require("persistence").select()
 end, { desc = "Select session to load" })
 
@@ -447,7 +624,7 @@ vim.keymap.set("n", "<leader>qL", function()
 end, { desc = "Load last session" })
 
 -- save session manually
-vim.keymap.set("n", "<leader>qs", function()
+vim.keymap.set("n", "<leader>qS", function()
   require("persistence").save()
 end, { desc = "Save session for current directory" })
 
@@ -461,6 +638,187 @@ end, { desc = "Don't save session on exit" })
 vim.keymap.set("n", "<M-o>", "<C-i>", { noremap = true, desc = "Jump forward in jumplist" })
 -- Keep F9 as an alternative for terminals that might not support Alt key properly
 vim.keymap.set("n", "<F9>", "<C-i>", { noremap = true, desc = "Jump forward in jumplist" })
+
+-- Add command to delete current file and send to trash
+vim.api.nvim_create_user_command("TrashFile", function()
+  local current_file = vim.fn.expand("%:p")
+  
+  -- Check if the file exists and is not empty
+  if current_file == "" then
+    vim.notify("No file to delete", vim.log.levels.ERROR)
+    return
+  end
+  
+  -- Confirm with the user
+  vim.ui.input({
+    prompt = "Move \"" .. vim.fn.fnamemodify(current_file, ":t") .. "\" to trash? (y/N): "
+  }, function(input)
+    if input and (input:lower() == "y" or input:lower() == "yes") then
+      -- Close buffer first
+      vim.cmd("bdelete")
+      
+      -- Use macOS 'trash' command if available (brew install trash)
+      local has_trash = vim.fn.executable("trash") == 1
+      
+      if has_trash then
+        -- Use 'trash' command
+        local result = vim.fn.system("trash " .. vim.fn.shellescape(current_file))
+        if vim.v.shell_error ~= 0 then
+          vim.notify("Failed to trash file: " .. result, vim.log.levels.ERROR)
+        else
+          vim.notify("File sent to trash: " .. vim.fn.fnamemodify(current_file, ":t"), vim.log.levels.INFO)
+        end
+      else
+        -- Fallback to macOS native 'move to trash' via osascript
+        local cmd = string.format([[osascript -e 'tell application "Finder" to delete POSIX file "%s"']], current_file)
+        local result = vim.fn.system(cmd)
+        if vim.v.shell_error ~= 0 then
+          vim.notify("Failed to trash file: " .. result, vim.log.levels.ERROR)
+        else
+          vim.notify("File sent to trash: " .. vim.fn.fnamemodify(current_file, ":t"), vim.log.levels.INFO)
+        end
+      end
+    end
+  end)
+end, {})
+
+-- Add keybinding for TrashFile command - we use ;D for "Delete" file
+vim.keymap.set("n", "<leader>D", ":TrashFile<CR>", { desc = "Move current file to trash", silent = true })
+
+-- Function to remove wiki links from the word under the cursor
+vim.api.nvim_create_user_command("RemoveWikiLinks", function()
+  -- Get the current cursor position
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local row, col = cursor_pos[1], cursor_pos[2]
+  
+  -- Get the current line
+  local line = vim.api.nvim_get_current_line()
+  
+  -- Find wiki links [[...]] pattern
+  local pos = 1
+  local start_pos, end_pos
+  
+  -- Scan the line for all wiki links
+  while pos <= #line do
+    local link_start = line:find("%[%[", pos)
+    if not link_start then break end
+    
+    local link_end = line:find("%]%]", link_start)
+    if not link_end then break end
+    
+    -- Check if cursor is inside this link
+    if link_start <= col + 1 and link_end + 1 >= col + 1 then
+      start_pos = link_start
+      end_pos = link_end + 1
+      break
+    end
+    
+    pos = link_end + 1
+  end
+  
+  if start_pos and end_pos then
+    -- We're inside a wiki link
+    -- Extract the content (without the brackets)
+    local link_text = line:sub(start_pos + 2, end_pos - 2)
+    
+    -- Handle pipe syntax [[Link|Display Text]]
+    local display_text = link_text
+    local pipe_pos = link_text:find("|")
+    if pipe_pos then
+      display_text = link_text:sub(pipe_pos + 1)
+    end
+    
+    -- Replace the wiki link with just the display text
+    local new_line = line:sub(1, start_pos - 1) .. display_text .. line:sub(end_pos + 1)
+    vim.api.nvim_set_current_line(new_line)
+    
+    -- Adjust cursor position if needed
+    local new_col
+    if col >= end_pos then
+      -- Cursor was after the link, adjust for the change in length
+      new_col = col - (end_pos - start_pos + 1) + #display_text
+    elseif col < start_pos then
+      -- Cursor was before the link, keep it where it was
+      new_col = col
+    else
+      -- Cursor was inside the link, place at the beginning of the replaced text
+      new_col = start_pos - 1
+    end
+    
+    vim.api.nvim_win_set_cursor(0, {row, math.max(0, new_col)})
+    vim.notify("Wiki link removed", vim.log.levels.INFO)
+  else
+    vim.notify("No wiki link found under cursor", vim.log.levels.WARN)
+  end
+end, {})
+
+-- Keybinding to remove wiki links
+vim.keymap.set("n", "<leader>wd", ":RemoveWikiLinks<CR>", { desc = "Remove wiki links from word", silent = true })
+
+-- Close all buffers command
+vim.api.nvim_create_user_command("BufCloseAll", function()
+  -- Get all buffer numbers
+  local buffers = vim.api.nvim_list_bufs()
+  local current_buf = vim.api.nvim_get_current_buf()
+  local count = 0
+  
+  -- Ask for confirmation
+  vim.ui.input({
+    prompt = "Close all buffers? (y/N): "
+  }, function(input)
+    if input and (input:lower() == "y" or input:lower() == "yes") then
+      -- First, create a new buffer so we don't end up with no buffers
+      local new_buf = vim.api.nvim_create_buf(true, false)
+      vim.api.nvim_set_current_buf(new_buf)
+      
+      -- Close all other buffers
+      for _, buf in ipairs(buffers) do
+        -- Ensure the buffer is valid and loaded
+        if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) then
+          -- Skip the newly created buffer
+          if buf ~= new_buf then
+            -- Try to close the buffer (with ! to avoid "no write since last change" warnings)
+            pcall(vim.cmd, "bd! " .. buf)
+            count = count + 1
+          end
+        end
+      end
+      
+      vim.notify("Closed " .. count .. " buffer(s)", vim.log.levels.INFO)
+    end
+  end)
+end, {})
+
+-- Keybinding to close all buffers
+vim.keymap.set("n", "<leader>ba", ":BufCloseAll<CR>", { desc = "Close all buffers", silent = true })
+
+-- Move current file to a different directory
+vim.api.nvim_create_user_command("MoveCurrentFile", function()
+  -- Load our custom file_mover module
+  local ok, file_mover = pcall(require, "custom.file_mover")
+  if not ok then
+    vim.notify("Failed to load file_mover module", vim.log.levels.ERROR)
+    return
+  end
+  
+  file_mover.move_file_telescope()
+end, {})
+
+-- Alternative command to move using Yazi file manager
+vim.api.nvim_create_user_command("MoveCurrentFileYazi", function()
+  -- Load our custom file_mover module
+  local ok, file_mover = pcall(require, "custom.file_mover")
+  if not ok then
+    vim.notify("Failed to load file_mover module", vim.log.levels.ERROR)
+    return
+  end
+  
+  file_mover.move_file_yazi()
+end, {})
+
+-- Keybindings for file moving
+vim.keymap.set("n", "<leader>fM", ":MoveCurrentFile<CR>", { desc = "Move current file (Telescope)", silent = true })
+vim.keymap.set("n", "<leader>fy", ":MoveCurrentFileYazi<CR>", { desc = "Move current file using Yazi", silent = true })
 
 -- Marks navigation and management
 vim.keymap.set("n", "<leader>fm", ":Telescope marks<CR>", { desc = "Find marks", silent = true, noremap = true })
@@ -552,3 +910,12 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", ";gcV", ":GoCoverageClear<CR>", { buffer = true, desc = "Clear code coverage", silent = true })
   end,
 })
+
+-- HLedger keymaps
+vim.keymap.set("n", "<leader>hb", ":HledgerBalance<CR>", { desc = "HLedger balance report", silent = true })
+vim.keymap.set("n", "<leader>hr", ":HledgerRegister<CR>", { desc = "HLedger register report", silent = true })
+vim.keymap.set("n", "<leader>ha", ":HledgerAccounts<CR>", { desc = "HLedger accounts picker", silent = true })
+
+-- TidalCycles keymaps (global - work in any file type)
+vim.keymap.set("n", "<leader>Tl", ":TidalLaunch<CR>", { desc = "Launch TidalCycles", silent = true })
+vim.keymap.set("n", "<leader>Tq", ":TidalQuit<CR>", { desc = "Quit TidalCycles", silent = true })

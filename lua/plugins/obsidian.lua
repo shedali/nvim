@@ -69,6 +69,10 @@ return {
         name = "web-console",
         path = "~/vaults/web-console",
       },
+      {
+        name = "quartz",
+        path = "~/dev/shedali/writing/quartz/content",
+      },
       -- {
       --   name = "posts",
       --   path = "~/dev/shedali/writing/blog/apps/blog/src/posts",
@@ -108,6 +112,22 @@ return {
         end
       end
       return tostring(os.time()) .. "-" .. suffix
+    end,
+    note_frontmatter_func = function(note)
+      -- Add the title based on the note's title
+      local out = { id = note.id, aliases = note.aliases, tags = note.tags }
+
+      -- If the note has a title, use it. Otherwise derive from filename
+      if note.title then
+        out.title = note.title
+      end
+
+      -- Ensure the note's title is included in aliases if not already present
+      if out.aliases == nil then
+        out.aliases = {}
+      end
+
+      return out
     end,
   },
 }

@@ -1,4 +1,11 @@
 return {
+  -- Ensure language servers are installed via mason
+  {
+    "mason-org/mason-lspconfig.nvim",
+    opts = {
+      ensure_installed = { "marksman" },
+    },
+  },
   {
     "neovim/nvim-lspconfig",
     opts = {

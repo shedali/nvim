@@ -2,6 +2,10 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 
+-- Override LazyVim's default leader (space) with semicolon
+vim.g.mapleader = ";"
+vim.g.maplocalleader = ";"
+
 -- Disable conceal globally to ensure code blocks are visible
 vim.opt.conceallevel = 0
 vim.opt.concealcursor = ""

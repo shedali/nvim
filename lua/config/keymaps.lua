@@ -497,7 +497,7 @@ vim.api.nvim_set_keymap("n", "<leader>pb", ":Octo pr browser<CR>", {
   noremap = true,
   silent = true,
 })
-vim.api.nvim_set_keymap("n", "<leader>ca", ":Octo comment add<CR>", {
+vim.api.nvim_set_keymap("n", "<leader>cn", ":Octo comment add<CR>", {
   noremap = true,
   silent = true,
   desc = "Add comment to PR"
@@ -542,6 +542,16 @@ vim.api.nvim_set_keymap("n", "<leader>pp", ":Octo actions<CR>", {
   noremap = true,
   silent = true,
 })
+
+-- Open the current review file for editing in a vertical split
+vim.keymap.set("n", "<leader>re", function()
+  local path = vim.api.nvim_buf_get_name(0)
+  if path and path ~= "" then
+    vim.cmd("vsplit " .. vim.fn.fnameescape(path))
+    vim.bo.modifiable = true
+    vim.bo.readonly = false
+  end
+end, { desc = "Open review file for editing" })
 
 vim.keymap.set("i", "@", "@<C-x><C-o>", {
   silent = true,

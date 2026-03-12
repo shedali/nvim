@@ -7,7 +7,47 @@ return {
     "nvim-tree/nvim-web-devicons",
   },
   opts = {
-    use_local_fs = false, -- use local files on right side of reviews
+    use_local_fs = true, -- use local files on right side of reviews
+    worktrees = (function()
+      local repos = {
+        "florence-demo-suite",
+        "florence-management-console",
+        "florence-platform-doc-generator",
+        "florence-platform-redoc",
+        "florence-platform-internal-docs",
+        "florence-lending-web",
+        "florence-okyc-configurator",
+        "florence-web-observability",
+        "florence-web-template-remix",
+        "florence-web-template-config-ui",
+        "florence-web-template-svelte",
+        "florence-web-template-react",
+        "florence-web-template-bun",
+        "florence-web-template-next",
+        "florence-web-template-actions-node",
+        "florence-web-template-static-page",
+        "florence-web-template-astro",
+        "florence-flakes",
+        "florence-web",
+        "florence-okyc-renderer",
+        "florence-okyc-lcm",
+        "florence-shared-workflows",
+        "florence-servicing-console",
+        "florence-platform-joint-smokes",
+        "lumen",
+        "sgo-frontend-github-actions",
+        "repository-factory",
+        "safepay-documentation-portal",
+      }
+      local entries = {}
+      for _, repo in ipairs(repos) do
+        table.insert(entries, {
+          toplevel = vim.env.HOME .. "/dev/chase/worktrees",
+          gitdir = vim.env.HOME .. "/dev/chase/" .. repo .. "/.git",
+        })
+      end
+      return entries
+    end)(),
     enable_builtin = false, -- shows a list of builtin actions when no action is provided
     default_remote = { "upstream", "origin" }, -- order to try remotes
     default_merge_method = "merge", -- default merge method which should be used for both `Octo pr merge` and merging from picker, could be `merge`, `rebase` or `squash`
@@ -142,7 +182,7 @@ return {
           desc = "navigate to a local repo issue",
         },
         add_comment = {
-          lhs = "<localleader>ca",
+          lhs = "<localleader>cn",
           desc = "add comment",
         },
         delete_comment = {
@@ -280,7 +320,7 @@ return {
           desc = "navigate to a local repo issue",
         },
         add_comment = {
-          lhs = "<localleader>ca",
+          lhs = "<localleader>cn",
           desc = "add comment",
         },
         delete_comment = {
@@ -342,7 +382,7 @@ return {
           desc = "navigate to a local repo issue",
         },
         add_comment = {
-          lhs = "<localleader>ca",
+          lhs = "<localleader>cn",
           desc = "add comment",
         },
         add_suggestion = {

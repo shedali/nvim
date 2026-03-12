@@ -26,15 +26,7 @@ return {
         luasnip = true,
       })
 
-      -- Auto-organize imports on save
-      local format_sync_grp = vim.api.nvim_create_augroup("GoImports", {})
-      vim.api.nvim_create_autocmd("BufWritePre", {
-        pattern = "*.go",
-        callback = function()
-          require("go.format").goimports()
-        end,
-        group = format_sync_grp,
-      })
+      -- Imports handled by conform.nvim (goimports formatter)
     end,
     event = { "CmdlineEnter" },
     ft = { "go", "gomod" },
@@ -157,27 +149,6 @@ return {
       }
     end,
   },
-
-  -- Formatting and linting with conform.nvim
-  {
-    "stevearc/conform.nvim",
-    opts = {
-      formatters_by_ft = {
-        go = { "goimports", "gofumpt" },
-      },
-    },
-  },
-
-  -- Linting with nvim-lint (disabled - golangci-lint not installed)
-  -- Uncomment and install golangci-lint if you want linting
-  -- {
-  --   "mfussenegger/nvim-lint",
-  --   opts = {
-  --     linters_by_ft = {
-  --       go = { "golangcilint" },
-  --     },
-  --   },
-  -- },
 
   -- Go-specific keybindings
   {

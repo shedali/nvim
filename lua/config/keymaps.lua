@@ -388,20 +388,20 @@ end, { desc = "Move selection up" })
 vim.api.nvim_set_keymap(
   "n",
   "<leader>twr",
-  "<cmd>lua require('neotest').run.run({vim.fn.expand('%'), vitestCommand='pnpm vitest --watch'})<cr>",
-  { desc = "Run Watch All" }
+  "<cmd>lua require('neotest').run.run({vim.fn.expand('%'), vitestCommand='pnpm vitest'})<cr>",
+  { desc = "Run All (neotest-vitest always uses --watch=false)" }
 )
 vim.api.nvim_set_keymap(
   "n",
   "<leader>twf",
-  "<cmd>lua require('neotest').run.run({ args = { 'pnpm', 'vitest', '--watch', vim.fn.expand('%') },cwd = vim.fn.getcwd()})<cr>",
-  { desc = "Run Watch File" }
+  "<cmd>lua require('neotest').run.run({vim.fn.expand('%'), vitestCommand='pnpm vitest'})<cr>",
+  { desc = "Run File" }
 )
 
 vim.api.nvim_set_keymap(
   "n",
   "<leader>trt",
-  "<cmd>lua require('neotest').run.run({ vitestCommand = 'pnpm vitest run' })<cr>",
+  "<cmd>lua require('neotest').run.run({ vitestCommand = 'pnpm vitest' })<cr>",
   { desc = "Run test" }
 )
 
@@ -496,16 +496,6 @@ vim.api.nvim_set_keymap("n", "<leader>pD", ":Octo pr draft<CR>", {
 vim.api.nvim_set_keymap("n", "<leader>pb", ":Octo pr browser<CR>", {
   noremap = true,
   silent = true,
-})
-vim.api.nvim_set_keymap("n", "<leader>cn", ":Octo comment add<CR>", {
-  noremap = true,
-  silent = true,
-  desc = "Add comment to PR"
-})
-vim.api.nvim_set_keymap("n", "<leader>cd", ":Octo comment delete<CR>", {
-  noremap = true,
-  silent = true,
-  desc = "Delete comment"
 })
 vim.api.nvim_set_keymap("n", "<leader>ptr", ":Octo thread resolve<CR>", {
   noremap = true,

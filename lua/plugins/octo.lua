@@ -482,7 +482,7 @@ return {
           desc = "discard review",
         },
         add_review_comment = {
-          lhs = "<localleader>ca",
+          lhs = "<localleader>cc",
           desc = "add a new review comment",
         },
         add_review_suggestion = {

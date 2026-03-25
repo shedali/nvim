@@ -18,12 +18,13 @@ return {
     {
       "<leader>gD",
       function()
-        local buf = vim.api.nvim_create_buf(false, true)
-        local lines = vim.fn.systemlist("GIT_EXTERNAL_DIFF=difft git diff main...HEAD")
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-        vim.api.nvim_set_option_value("filetype", "diff", { buf = buf })
         vim.cmd("tabnew")
-        vim.api.nvim_win_set_buf(0, buf)
+        vim.fn.termopen("GIT_EXTERNAL_DIFF=difft git diff main...HEAD", {
+          on_exit = function()
+            vim.keymap.set("n", "q", "<cmd>tabclose<cr>", { buffer = true, silent = true })
+          end,
+        })
+        vim.cmd("startinsert")
       end,
       desc = "Difftastic diff against main",
     },

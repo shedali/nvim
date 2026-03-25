@@ -11,3 +11,4 @@ data
 .direnv
 
 **/.claude/settings.local.json
+.dmux/

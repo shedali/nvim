@@ -6,6 +6,9 @@
 vim.g.mapleader = ";"
 vim.g.maplocalleader = ";"
 
+-- Show filename prominently above each buffer
+vim.opt.winbar = "%=%m %f"
+
 -- Disable conceal globally to ensure code blocks are visible
 vim.opt.conceallevel = 0
 vim.opt.concealcursor = ""

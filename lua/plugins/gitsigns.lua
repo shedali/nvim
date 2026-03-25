@@ -2,20 +2,6 @@ return {
   "lewis6991/gitsigns.nvim",
   keys = {
     {
-      "<leader>gm",
-      function()
-        require("gitsigns").change_base("main", true)
-      end,
-      desc = "Gitsigns diff against main",
-    },
-    {
-      "<leader>gM",
-      function()
-        require("gitsigns").reset_base(true)
-      end,
-      desc = "Gitsigns reset to index",
-    },
-    {
       "<leader>gD",
       function()
         vim.cmd("tabnew")

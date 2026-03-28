@@ -85,7 +85,7 @@ return {
     timeline_indent = 2, -- timeline indentation
     right_bubble_delimiter = "", -- bubble delimiter
     left_bubble_delimiter = "", -- bubble delimiter
-    github_hostname = "", -- GitHub Enterprise host
+    github_hostname = nil, -- GitHub Enterprise host (nil = use github.com)
     snippet_context_lines = 4, -- number or lines around commented lines
     gh_cmd = "gh", -- Command to use when calling Github CLI
     gh_env = {}, -- extra environment variables to pass on to GitHub CLI, can be a table or function returning a table

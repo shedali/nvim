@@ -19,6 +19,17 @@ vim.api.nvim_create_autocmd("FileType", {
   desc = "Disable conceal for markdown files to show code blocks"
 })
 
+-- cd into directory when nvim is launched with a directory argument
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    local arg = vim.fn.argv(0)
+    if arg ~= "" and vim.fn.isdirectory(arg) == 1 then
+      vim.cmd("cd " .. vim.fn.fnameescape(arg))
+    end
+  end,
+  desc = "Auto-cd into directory argument on launch",
+})
+
 -- TidalCycles file type detection
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = "*.tidal",

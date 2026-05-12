@@ -26,6 +26,9 @@ require("lazy").setup({
     -- Use lazy-lock.json to pin versions (committed to git for reproducibility)
     version = false, -- don't auto-update to latest versions
   },
+  rocks = {
+    hererocks = true, -- bootstrap Lua 5.1 + luarocks locally (required for rest.nvim tree-sitter deps on Nix)
+  },
   install = { colorscheme = { "tokyonight", "habamax" } },
   checker = {
     enabled = false, -- disable auto-checking for updates (less noise)
